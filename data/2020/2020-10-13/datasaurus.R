@@ -126,8 +126,90 @@ datasaurus %>%
 # {gganimate} - really slow, but cool apparently?
 # 
 
+
+# PATCHWORK
+
+# Kasia also mentioned this: https://patchwork.data-imaginist.com/
+# {patchwork}
+install.packages("patchwork")
+library(patchwork)
+# Just FYI: it doesnt play with cowplot if cowplot was loaded first
+# Attaching package: ‘patchwork’
+# 
+# The following object is masked from ‘package:cowplot’:
+#   
+#   align_plots
+
+# create some individual plots to play with by filtering datasets 
+plot_circle <- 
+  datasaurus %>%
+  filter(dataset == "circle") %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point()
+
+plot_away <- 
+datasaurus %>%
+  filter(dataset == "away") %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point()
+
+plot_dino <- 
+  datasaurus %>%
+  filter(dataset == "dino") %>%
+  group_by(dataset) %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point()
+
+plot_star <- 
+  datasaurus %>%
+  filter(dataset == "star") %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point()
+
+
+# basic "side by side 2 plots"
+plot_set <- plot_circle + plot_dino
+plot_set
+
+# plot a 2 x 2 grid 
+plot_set <- (plot_circle|plot_away)/(plot_dino|plot_star)
+plot_set
+
+# plot a 1:2:1 grid 
+plot_set <- plot_circle|plot_away/plot_dino|plot_star
+plot_set
+
+
 # I keep hearing about {cowplot}
 #https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html
 
 install.packages("cowplot")
 library(cowplot)
+
+# 'classic' cowplot 
+datasaurus %>%
+  filter(dataset %in% c("circle", "slant_up")) %>%
+  group_by(dataset) %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point() + 
+  theme_cowplot(12)  # I'm not sure which argument this '12' actually refers to?
+
+# 'minimal grid' cowplot 
+datasaurus %>%
+  filter(dataset %in% c("circle", "star")) %>%
+  group_by(dataset) %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point() + 
+  theme_minimal_grid(12) 
+
+# save this out to .pdf
+# 'minimal grid' cowplot 
+testplot <- datasaurus %>%
+  filter(dataset %in% c("circle", "star")) %>%
+  group_by(dataset) %>%
+  ggplot(aes(x=x, y=y, colour=dataset)) + 
+  geom_point() + 
+  theme_minimal_grid(12) 
+
+ggsave(testplot, filename="/home/fanders6/tidytuesday/data/2020/2020-10-13/starcircle_cowplot_minimal.pdf", device="pdf")
+
