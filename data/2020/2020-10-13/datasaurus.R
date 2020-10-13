@@ -158,13 +158,13 @@ plot_dino <-
   filter(dataset == "dino") %>%
   group_by(dataset) %>%
   ggplot(aes(x=x, y=y, colour=dataset)) + 
-  geom_point()
+  geom_point(colour="green")
 
 plot_star <- 
   datasaurus %>%
   filter(dataset == "star") %>%
   ggplot(aes(x=x, y=y, colour=dataset)) + 
-  geom_point()
+  geom_point(colour="gold")
 
 
 # basic "side by side 2 plots"
@@ -180,6 +180,8 @@ plot_set <- plot_circle|plot_away/plot_dino|plot_star
 plot_set
 
 
+# COWPLOT
+
 # I keep hearing about {cowplot}
 #https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html
 
@@ -192,7 +194,7 @@ datasaurus %>%
   group_by(dataset) %>%
   ggplot(aes(x=x, y=y, colour=dataset)) + 
   geom_point() + 
-  theme_cowplot(12)  # I'm not sure which argument this '12' actually refers to?
+  cowplot::theme_cowplot(12)  # I'm not sure which argument this '12' actually refers to?
 
 # 'minimal grid' cowplot 
 datasaurus %>%
@@ -200,7 +202,7 @@ datasaurus %>%
   group_by(dataset) %>%
   ggplot(aes(x=x, y=y, colour=dataset)) + 
   geom_point() + 
-  theme_minimal_grid(12) 
+  cowplot::theme_minimal_grid(12) 
 
 # save this out to .pdf
 # 'minimal grid' cowplot 
@@ -209,7 +211,11 @@ testplot <- datasaurus %>%
   group_by(dataset) %>%
   ggplot(aes(x=x, y=y, colour=dataset)) + 
   geom_point() + 
-  theme_minimal_grid(12) 
+  cowplot::theme_minimal_grid(12) 
 
 ggsave(testplot, filename="/home/fanders6/tidytuesday/data/2020/2020-10-13/starcircle_cowplot_minimal.pdf", device="pdf")
 
+
+# add publication-style A, B, C annotations to the plots
+# plot_grid() function can plot different types of plot (e.g. cowplot vs ggplot)
+plot_grid(testplot, plot_dino, labels = c('A', 'B'), label_size = 12)
